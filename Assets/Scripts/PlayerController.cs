@@ -23,6 +23,11 @@ public class PlayerController : MonoBehaviour {
         Area.onAreaStay += OnAreaStay;
     }
 
+    private void OnDestroy()
+    {
+        Area.onAreaStay -= OnAreaStay;
+    }
+
     private void OnAreaStay(Area.AreaType givenAreaType)
     {
         print(givenAreaType);
