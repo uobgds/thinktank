@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour {
 
-    private Vector2 Position;
+    private Vector2 position;
 
     private readonly float MAX_SPEED = 10f;
 
@@ -18,17 +18,26 @@ public class InputManager : MonoBehaviour {
 
     private int numberOfShapes = Enum.GetNames(typeof(RobotShape)).Length;
 
+    public struct RobotInput
+    {
+        public Vector2 position;
+        public RobotShape shape;
+    }
+
+    public RobotInput getRobotInput()
+    {
+        RobotInput input = new RobotInput();
+        input.position = position;
+        input.shape = (RobotShape)shapeNum;
+        return input;
+    }
+
 
 	// Use this for initialization
 	void Start () {
-        Position = new Vector2(0, 0);
+        position = new Vector2(0, 0);
         shapeNum = 1;
 	}
-
-    private RobotShape findShape()
-    {
-        return (RobotShape)shapeNum;
-    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -42,17 +51,14 @@ public class InputManager : MonoBehaviour {
         float currentXVelocity = moveHorizontal * MAX_SPEED;
         float currentYVelocity = moveVertical * MAX_SPEED;
 
-        Position[0] = Position[0] + currentXVelocity;
-        Position[1] = Position[1] + currentYVelocity;
+        position[0] = position[0] + currentXVelocity;
+        position[1] = position[1] + currentYVelocity;
 
         //Deals with toggling between shapes
         if (Input.GetKeyUp("space"))
         {
-            shapeNum++;
-            if(shapeNum == numberOfShapes)
-            {
-                shapeNum = 0;
-            }
+            shapeNum = ++shapeNum % numberOfShapes;
+            
         }
 
 
