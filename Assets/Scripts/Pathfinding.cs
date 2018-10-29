@@ -2,15 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pathfinding : MonoBehaviour {
+public static class Pathfinding {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public static List<Vector2> FindPath (Vector2 start, Vector2 End)
+    {
+        return null;
+    } 
+
 }
