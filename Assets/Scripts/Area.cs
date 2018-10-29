@@ -4,16 +4,11 @@ using UnityEngine;
 
 public class Area : MonoBehaviour {
 
-    public enum AreaType
-    {
-        AreaTypeOne, AreaTypeTwo, AreaTypeThree
-    }
-
     [SerializeField]
-    private AreaType m_areaType;
+    private AreaDetails m_areaDetails;
     private PlayerController m_playerController;
 
-    public delegate void OnAreaStay(AreaType m_areaType);
+    public delegate void OnAreaStay(AreaDetails m_areaDetails);
     public static OnAreaStay onAreaStay;
 
     private void OnTriggerStay2D(Collider2D collision)
@@ -23,9 +18,49 @@ public class Area : MonoBehaviour {
         {
             if (onAreaStay != null)
             {
-                onAreaStay(m_areaType);
+                onAreaStay(m_areaDetails);
             }
         }
     }
 
+}
+
+[System.Serializable]
+public class AreaDetails
+{
+    [SerializeField]
+    private float m_damagePerSecond;
+    [SerializeField]
+    private float m_speedModifier;
+
+    public float DamagePerSecond
+    {
+        get
+        {
+            return m_damagePerSecond;
+        }
+        set
+        {
+            if (value > 0f)
+            {
+                m_damagePerSecond = value;
+            }
+            else
+            {
+                m_damagePerSecond = 0f;
+            }
+        }
+    }
+
+    public float SpeedModifier
+    {
+        get
+        {
+            return m_speedModifier;
+        }
+        set
+        {
+            m_speedModifier = value;
+        }
+    }
 }
