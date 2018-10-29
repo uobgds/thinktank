@@ -30,8 +30,6 @@ public class AreaDetails
 {
     [SerializeField]
     private float m_damagePerSecond;
-    [SerializeField]
-    private float m_speedModifier;
 
     public float DamagePerSecond
     {
@@ -49,18 +47,6 @@ public class AreaDetails
             {
                 m_damagePerSecond = 0f;
             }
-        }
-    }
-
-    public float SpeedModifier
-    {
-        get
-        {
-            return m_speedModifier;
-        }
-        set
-        {
-            m_speedModifier = value;
         }
     }
 }

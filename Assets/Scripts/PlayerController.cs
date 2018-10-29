@@ -6,14 +6,11 @@ public class PlayerController : MonoBehaviour {
 
     public static PlayerController Instance;
 
-    [SerializeField]
-    private float m_speed;
+    private InputManager m_inputManager;
 
-    private float m_horizontal;
-    private float m_vertical;
-    private Vector2 m_translate;
-    private float m_speedModifier;
     private float m_health;
+
+    private InputManager.RobotInput m_robotInput;
 
     [SerializeField]
     private float m_maxHealth;
@@ -45,6 +42,9 @@ public class PlayerController : MonoBehaviour {
     private void Start()
     {
         Area.onAreaStay += OnAreaStay;
+
+        m_inputManager = GetComponent<InputManager>();
+        m_health = m_maxHealth;
     }
 
     private void Update()
@@ -54,17 +54,9 @@ public class PlayerController : MonoBehaviour {
 
     private void Movement ()
     {
-        m_horizontal = Input.GetAxisRaw("Horizontal");
-        m_vertical = Input.GetAxisRaw("Vertical");
+        m_robotInput = m_inputManager.getRobotInput();
 
-        m_translate = new Vector2(m_horizontal, m_vertical);
-
-        transform.position += new Vector3(m_translate.x, m_translate.y) * Time.deltaTime * m_speed;
-    }
-
-    private void TakeDamage ()
-    {
-
+        transform.position = m_robotInput.position;
     }
 
     private void OnDestroy()
@@ -74,10 +66,13 @@ public class PlayerController : MonoBehaviour {
 
     private void OnAreaStay(AreaDetails givenAreaDetails)
     {
-        m_speedModifier = givenAreaDetails.SpeedModifier;
-        print(givenAreaType);
+        TakeDamage(givenAreaDetails.DamagePerSecond);
     }
 
-
+    private void TakeDamage (float givenDamage)
+    {
+        Health -= givenDamage * Time.deltaTime;
+        print(Health);
+    }
 
 }
