@@ -349,6 +349,21 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114595169499745004, guid: 87dd378a3866652448170e2d0d320f18,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1108168313}
+    - target: {fileID: 114595169499745004, guid: 87dd378a3866652448170e2d0d320f18,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 87dd378a3866652448170e2d0d320f18, type: 2}
   m_IsPrefabAsset: 0
+--- !u!1 &1108168313 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1922738872639400, guid: 87dd378a3866652448170e2d0d320f18,
+    type: 2}
+  m_PrefabInternal: {fileID: 1108168312}
