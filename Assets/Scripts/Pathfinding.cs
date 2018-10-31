@@ -2,229 +2,230 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Pathfinding {
+public class Pathfinding : MonoBehaviour {
 
-    private static float m_tileSize;
-    private static Vector2 m_start;
-    private static Vector2 m_end;
+    public static Pathfinding Instance;
 
-        public static Vector2 m_position;
-
-        private class Tile
-        {
-            public Tile m_previousTile;
-
-            public static List<Tile> FindTilePath(List<Tile> givenPath)
-            {
-                if (m_previousTile == null)
-                {
-                    return givenPath;
-                }
-                else
-                {
-                    givenPath.Add(this);
-                    m_previousTile.FindTilePath(givenPath);
-                    return givenPath;
-                }
-            }
-
-            public int m_pathCost;
-            public int m_walkSpeedCost;
-
-            public float m_directDistance;
-
-            public Vector2 m_position;
-        }
-
+    public enum TileState
+    {
+        Open, Closed
     }
 
-    public static List<Vector2> FindPath (Vector2 start, Vector2 end)
+    [SerializeField]
+    private Vector2 m_mapSize;
+    [SerializeField]
+    private float m_tileSize;
+    private Vector2 m_start;
+    private Vector2 m_end;
+    private Vector2 m_position;
+
+    private List<Tile> m_adjacentTiles;
+    private Tile m_adjacentTile;
+
+    private List<Tile> m_openTiles;
+    private Tile m_startTile;
+    private Tile m_endTile;
+    private Tile m_currentTile;
+    private float m_cheapestTileCost;
+
+    private int m_iterationCount;
+
+    private bool m_unableToReachTile;
+
+    private List<Vector2> m_calculatedPath;
+
+    private TileState[,] m_pathfindingMap;
+    private int[,] m_visitedTiles;
+
+    private class Tile
     {
-        m_start = new Vector2(Mathf.RoundToInt(start.x), Mathf.RoundToInt(start.y)) / m_tileSize;
-        m_end = new Vector2(Mathf.RoundToInt(end.x), Mathf.RoundToInt(end.y)) / m_tileSize;
+        public Tile m_previousTile;
+        public int m_pathCost;
+        public float m_directDistance;
+        public Vector2 m_position;
+        public TileState tileState;
 
-        return null;
-    } 
-
-    private static List<Vector2> AdjacentTiles
-    {
-
+        public List<Tile> FindTilePath(List<Tile> givenPath)
+        {
+            if (m_previousTile == null)
+            {
+                return givenPath;
+            }
+            else
+            {
+                givenPath.Add(this);
+                m_previousTile.FindTilePath(givenPath);
+                return givenPath;
+            }
+        }
     }
 
-}
-
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
- public List<Vector2> FindPath(Vector2 givenStartPosition, Vector2 givenEndPosition)
-{
-    StartCoroutine(FindPathCoroutine(givenStartPosition, givenEndPosition, PathfindingMap));
-    return m_calculatedPath;
-}
-
-//NOTE: pass in real-world positions into here- not array positions, we will convert from real-world to array in the function
-private IEnumerator FindPathCoroutine(Vector2 givenStartPosition, Vector2 givenEndPosition, int[,] givenTileArray)
-{
-    m_unableToReachTile = false;
-
-    givenStartPosition /= GameController.Instance.TileSpacing;
-    givenEndPosition /= GameController.Instance.TileSpacing;
-
-    m_iterationCount = 0;
-    m_visitedTiles = new int[PathfindingMap.GetLength(0), PathfindingMap.GetLength(1)];
-
-    foreach (Transform trans in m_pathMarkerParent.GetComponentsInChildren<Transform>())
+    private void Awake()
     {
-        if (trans != m_pathMarkerParent.transform)
+        if (Instance)
         {
-            Destroy(trans.gameObject);
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
         }
     }
-    m_openTiles = new List<TileDetails>();
 
-    m_startTile = new TileDetails();
-    m_endTile = new TileDetails();
-
-    m_startTile.m_position = givenStartPosition;
-    m_endTile.m_position = givenEndPosition;
-
-    m_currentTile = m_startTile;
-
-    m_visitedTiles[(int)m_currentTile.m_position.x, (int)m_currentTile.m_position.y] = 1;
-
-    while (m_currentTile.m_position != m_endTile.m_position && m_iterationCount < m_allowedIterations)
+    private void Start ()
     {
-        m_iterationCount++;
-        m_cheapestTileCost = float.MaxValue;
+        m_pathfindingMap = new TileState[(int)m_mapSize.x, (int)m_mapSize.y];
 
-        foreach (TileDetails tileDetails in FindAdjacentTiles(m_currentTile, m_endTile, givenTileArray))
+        foreach (Blocker blocker in FindObjectsOfType<Blocker>())
         {
-            bool tileAlreadyExists = false;
-
-            for (int i = 0; i < m_openTiles.Count; i++)
-            {
-                //if the tile already exists
-                if (m_openTiles[i].m_position == tileDetails.m_position)
-                {
-                    m_openTiles[i].m_pathCost = tileDetails.m_pathCost;
-                    tileAlreadyExists = true;
-                    //basically, we return all these adjacent tiles yeh, but what was happening before was we would see that some of the tiles were already
-                    //in the m_openTiles list, so we wouldn't add them again, BUT we forgot that this means their path cost never is updated, so they always 
-                    //seemed really cheap to the algorithm
-                }
-            }
-
-            if (!tileAlreadyExists)
-            {
-                m_openTiles.Insert(0, tileDetails); //put at front of list, as recently looked at adjacent tiles are likely to be most efficient to be looked at next
-            }
+            UpdatePathfindingMap(blocker.transform.position, TileState.Closed);
         }
+    }
 
-        foreach (TileDetails tileDetails in m_openTiles)
+    //NOTE: pass in real-world positions into here- not array positions, we will convert from real-world to array in the function
+    private void UpdatePathfindingMap (Vector2 givenPosition, TileState givenTileState)
+    {
+        Vector2 pos = new Vector2(Mathf.RoundToInt(givenPosition.x), Mathf.RoundToInt(givenPosition.y)) / m_tileSize;
+        if (IsWithinMapBounds((int)pos.x, (int)pos.y))
         {
-            if ((tileDetails.m_pathCost + (int)tileDetails.m_directDistance) < m_cheapestTileCost)
-            {
-                m_cheapestTileCost = tileDetails.m_pathCost + (int)tileDetails.m_directDistance;
-                m_currentTile = tileDetails;
-            }
+            m_pathfindingMap[(int)pos.x, (int)pos.y] = givenTileState;
         }
+    }
+
+    private bool IsWithinMapBounds (int givenX, int givenY)
+    {
+        return givenX >= 0 && givenX < m_pathfindingMap.GetLength(0) &&
+            givenY >= 0 && givenY < m_pathfindingMap.GetLength(1);
+    }
+
+    public List<Vector2> FindPath(Vector2 givenStartPosition, Vector2 givenEndPosition)
+    {
+        m_calculatedPath = new List<Vector2>();
+        StartCoroutine(FindPathCoroutine(givenStartPosition, givenEndPosition, m_pathfindingMap));
+        return m_calculatedPath;
+    }
+
+    //NOTE: pass in real-world positions into here- not array positions, we will convert from real-world to array in the function
+    private IEnumerator FindPathCoroutine(Vector2 givenStartPosition, Vector2 givenEndPosition, TileState[,] givenPathfindingMap)
+    {
+        m_start = new Vector2(Mathf.RoundToInt(givenStartPosition.x), Mathf.RoundToInt(givenStartPosition.y)) / m_tileSize;
+        m_end = new Vector2(Mathf.RoundToInt(givenEndPosition.x), Mathf.RoundToInt(givenEndPosition.y)) / m_tileSize;
+
+        m_visitedTiles = new int[givenPathfindingMap.GetLength(0), givenPathfindingMap.GetLength(1)];
+
+        m_openTiles = new List<Tile>();
+
+        m_startTile = new Tile();
+        m_endTile = new Tile();
+
+        m_startTile.m_position = givenStartPosition;
+        m_endTile.m_position = givenEndPosition;
+
+        m_currentTile = m_startTile;
+
         m_visitedTiles[(int)m_currentTile.m_position.x, (int)m_currentTile.m_position.y] = 1;
-        m_openTiles.Remove(m_currentTile);
 
-        #region Too scared to remove
-        //for (int i = 0; i < m_openTiles.Count; i++)
-        //{
-        //    if (m_openTiles[i].m_position == m_currentTile.m_position)
-        //    {
-        //        m_visitedTiles[(int)m_openTiles[i].m_position.x, (int)m_openTiles[i].m_position.y] = 1;
-        //        m_openTiles.RemoveAt(i);
-        //        break;
-        //    }
-        //}
-        #endregion
+        m_iterationCount = 0;
 
-        if (m_showAllMoves && m_showPath)
+        while (m_currentTile.m_position != m_endTile.m_position)
         {
-            SpawnMarker(m_currentTile.m_position, m_pathMarkerParent.transform, (m_currentTile.m_pathCost + "," + m_currentTile.m_directDistance).ToString());
-        }
+            m_iterationCount++;
+            m_cheapestTileCost = float.MaxValue;
 
-        if (m_iterationCount > 500) //this prevents too much work being carried out in one frame, so the game won't freeze
-        {
-            m_iterationCount = 0;
-            yield return null;
-        }
-
-        if (m_openTiles.Count == 0) //explored all tiles, means we've tried to get to a blocked area
-        {
-            print("can't reach tile");
-            m_unableToReachTile = true;
-            break;
-        }
-    }
-
-    if (m_unableToReachTile)
-    {
-        m_calculatedPath = new List<Vector2>();
-    }
-
-    else
-    {
-        m_calculatedPath = new List<Vector2>();
-
-        foreach (TileDetails tileDetails in m_currentTile.FindTilePath(new List<TileDetails>()))
-        {
-            m_calculatedPath.Add(tileDetails.m_position * GameController.Instance.TileSpacing);
-
-            if (!m_showAllMoves && m_showPath)
+            foreach (Tile tile in FindAdjacentTiles(m_currentTile, m_endTile, givenPathfindingMap))
             {
-                SpawnMarker(tileDetails.m_position, m_pathMarkerParent.transform, (m_currentTile.m_pathCost + "," + m_currentTile.m_directDistance).ToString());
-            }
-        }
-    }
-}
+                bool tileAlreadyExists = false;
 
-private List<TileDetails> FindAdjacentTiles(TileDetails givenCurrentTile, TileDetails givenTargetTile, int[,] givenTileArray)
-{
-    m_adjacentTiles = new List<TileDetails>();
-
-    for (int x = -1; x < 2; x++) //check a 3x3 grid around the givenCurrentTile
-    {
-        for (int y = -1; y < 2; y++)
-        {
-            m_adjacentTile = new TileDetails();
-
-            m_adjacentTile.m_position.x = (int)(x + givenCurrentTile.m_position.x);
-            m_adjacentTile.m_position.y = (int)(y + givenCurrentTile.m_position.y);
-
-            if (IsInMapBounds(m_adjacentTile.m_position) && m_visitedTiles[(int)m_adjacentTile.m_position.x, (int)m_adjacentTile.m_position.y] == 0) //if tile is not already visited
-            {
-                m_adjacentTile.m_walkSpeedCost = givenTileArray[(int)m_adjacentTile.m_position.x, (int)m_adjacentTile.m_position.y];
-                //tile is within the map bounds and is not an obstacle
-                if (m_adjacentTile.m_walkSpeedCost != -1
-                    && m_adjacentTile.m_position != givenCurrentTile.m_position)
+                for (int i = 0; i < m_openTiles.Count; i++)
                 {
-                    //quick note: I do all this stuff here (tile cost etc) rather than above, as above tiles are not guaranteed to make it on the final list, so might as well only 
-                    //burn cpu time on tiles of use
+                    //if the tile already exists
+                    if (m_openTiles[i].m_position == tile.m_position)
+                    {
+                        m_openTiles[i].m_pathCost = tile.m_pathCost;
+                        tileAlreadyExists = true;
+                    }
+                }
 
-                    m_adjacentTile.m_directDistance = Vector2.Distance(m_adjacentTile.m_position, givenTargetTile.m_position) * 50f;
-
-                    //m_adjacentTile.m_directDistance = BlockDistance(m_adjacentTile.m_position, givenTargetTile.m_position);
-
-                    m_adjacentTile.m_previousTile = givenCurrentTile;
-
-                    m_adjacentTile.m_pathCost += m_adjacentTile.m_walkSpeedCost + givenCurrentTile.m_pathCost;
-                    m_adjacentTiles.Add(m_adjacentTile);
+                if (!tileAlreadyExists)
+                {
+                    m_openTiles.Insert(0, tile); //put at front of list, as recently looked at adjacent tiles are likely to be most efficient to be looked at next
                 }
             }
 
+            foreach (Tile tile in m_openTiles)
+            {
+                if ((tile.m_pathCost + (int)tile.m_directDistance) < m_cheapestTileCost)
+                {
+                    m_cheapestTileCost = tile.m_pathCost + (int)tile.m_directDistance;
+                    m_currentTile = tile;
+                }
+            }
+            m_visitedTiles[(int)m_currentTile.m_position.x, (int)m_currentTile.m_position.y] = 1;
+            m_openTiles.Remove(m_currentTile);
+
+            if (m_iterationCount > 500) //this prevents too much work being carried out in one frame, so the game won't freeze
+            {
+                m_iterationCount = 0;
+                yield return null;
+            }
+
+            if (m_openTiles.Count == 0) //explored all tiles, means we've tried to get to a blocked area
+            {
+                print("can't reach tile");
+                m_unableToReachTile = true;
+                break;
+            }
+        }
+
+        if (m_unableToReachTile)
+        {
+            m_calculatedPath = new List<Vector2>();
+        }
+
+        else
+        {
+            m_calculatedPath = new List<Vector2>();
+
+            foreach (Tile tileDetails in m_currentTile.FindTilePath(new List<Tile>()))
+            {
+                m_calculatedPath.Add(tileDetails.m_position * m_tileSize);
+            }
         }
     }
-    return m_adjacentTiles;
-}
 
-private bool IsInMapBounds(Vector2 givenPosition)
-{
-    return givenPosition.x >= 0
-        && givenPosition.x < PathfindingMap.GetLength(0)
-        && givenPosition.y >= 0
-        && givenPosition.y < PathfindingMap.GetLength(1);
+    private List<Tile> FindAdjacentTiles(Tile givenCurrentTile, Tile givenTargetTile, TileState[,] givenPathfindingMap)
+    {
+        m_adjacentTiles = new List<Tile>();
+
+        for (int x = -1; x < 2; x++) //check a 3x3 grid around the givenCurrentTile
+        {
+            for (int y = -1; y < 2; y++)
+            {
+                m_adjacentTile = new Tile();
+
+                m_adjacentTile.m_position.x = (int)(x + givenCurrentTile.m_position.x);
+                m_adjacentTile.m_position.y = (int)(y + givenCurrentTile.m_position.y);
+
+                if (IsWithinMapBounds((int)m_adjacentTile.m_position.x, (int)m_adjacentTile.m_position.y) 
+                    && m_visitedTiles[(int)m_adjacentTile.m_position.x, (int)m_adjacentTile.m_position.y] == 0) //if tile is not already visited
+                {
+                    m_adjacentTile.tileState = givenPathfindingMap[(int)m_adjacentTile.m_position.x, (int)m_adjacentTile.m_position.y];
+                    //tile is within the map bounds and is not an obstacle
+                    if (m_adjacentTile.tileState != TileState.Closed
+                        && m_adjacentTile.m_position != givenCurrentTile.m_position)
+                    {
+                        m_adjacentTile.m_directDistance = Vector2.Distance(m_adjacentTile.m_position, givenTargetTile.m_position) * 50f;
+
+                        m_adjacentTile.m_previousTile = givenCurrentTile;
+
+                        m_adjacentTile.m_pathCost += givenCurrentTile.m_pathCost;
+                        m_adjacentTiles.Add(m_adjacentTile);
+                    }
+                }
+
+            }
+        }
+        return m_adjacentTiles;
+    }
+
 }

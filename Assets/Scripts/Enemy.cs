@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour {
+public class Enemy : Blocker {
 
     [SerializeField]
     private bool m_shouldPatrol;
@@ -20,13 +20,13 @@ public class Enemy : MonoBehaviour {
         Movement();
     }
 
-    private void Movement ()
+    private void Movement()
     {
         m_nextPosition = GetNextPosition();
         transform.position += (transform.position - m_nextPosition) * Time.deltaTime * m_speed;
     }
 
-    private Vector2 GetNextPosition ()
+    private Vector2 GetNextPosition()
     {
         if (m_shouldPatrol)
         {
@@ -34,7 +34,7 @@ public class Enemy : MonoBehaviour {
         }
         else
         {
-            return Pathfinding.FindPath(transform.position, new Vector2())[0];
+            return Pathfinding.Instance.FindPath(transform.position, new Vector2())[0];
         }
     }
 
