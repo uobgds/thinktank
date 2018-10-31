@@ -4,20 +4,13 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
 
-    [System.Serializable]
-    private class PatrolPoint
-    {
-        [SerializeField]
-        private Trans 
-    }
-
     [SerializeField]
     private bool m_shouldPatrol;
 
     private Vector3 m_nextPosition;
 
     [SerializeField]
-    private List<Vector2> m_patrolPoints;
+    private List<Transform> m_patrolPoints;
 
     [SerializeField]
     private float m_speed;
@@ -41,7 +34,7 @@ public class Enemy : MonoBehaviour {
         }
         else
         {
-            return Pathfinding.FindPath(transform.position, PlayerController.Instance.transform.position)[0];
+            return Pathfinding.FindPath(transform.position, new Vector2())[0];
         }
     }
 
