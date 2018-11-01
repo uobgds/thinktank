@@ -99,9 +99,13 @@ public class Enemy : Blocker {
         //if we've changed position
         if (new Vector3(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y)) != m_currentPosition)
         {
-            Pathfinding.Instance.UpdatePathfindingMap(m_currentPosition / Pathfinding.Instance.m_tileSize, Pathfinding.TileState.Open);
+            Pathfinding.Instance.UpdatePathfindingMap(new Vector2(Mathf.RoundToInt(m_currentPosition.x / Pathfinding.Instance.m_tileSize), 
+                Mathf.RoundToInt(m_currentPosition.y / Pathfinding.Instance.m_tileSize)), Pathfinding.TileState.Open);
+
             m_currentPosition = new Vector2(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-            Pathfinding.Instance.UpdatePathfindingMap(m_currentPosition / Pathfinding.Instance.m_tileSize, Pathfinding.TileState.Closed);
+
+            Pathfinding.Instance.UpdatePathfindingMap(new Vector2(Mathf.RoundToInt(m_currentPosition.x / Pathfinding.Instance.m_tileSize),
+                 Mathf.RoundToInt(m_currentPosition.y / Pathfinding.Instance.m_tileSize)), Pathfinding.TileState.Closed);
         }
         else
         {
