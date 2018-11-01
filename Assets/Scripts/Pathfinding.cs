@@ -6,6 +6,9 @@ public class Pathfinding : MonoBehaviour {
 
     public static Pathfinding Instance;
 
+    public delegate void OnPathfindingMapUpdated(Vector2 position);
+    public static OnPathfindingMapUpdated onPathfindingMapUpdated;
+
     public enum TileState
     {
         Open, Closed
@@ -13,8 +16,7 @@ public class Pathfinding : MonoBehaviour {
 
     [SerializeField]
     private Vector2 m_mapSize;
-    [SerializeField]
-    private float m_tileSize;
+    public float m_tileSize;
     private Vector2 m_start;
     private Vector2 m_end;
     private Vector2 m_position;
@@ -30,17 +32,21 @@ public class Pathfinding : MonoBehaviour {
 
     private int m_iterationCount;
 
+    public bool m_initialised;
+
     private bool m_unableToReachTile;
 
-    private List<Vector2> m_calculatedPath;
+    private PathfindingInformation m_pathfindingInformation;
 
     private TileState[,] m_pathfindingMap;
     private int[,] m_visitedTiles;
 
+    private TileState m_previousTileState;
+
     private class Tile
     {
         public Tile m_previousTile;
-        public int m_pathCost;
+        public int m_pathCost = 1;
         public float m_directDistance;
         public Vector2 m_position;
         public TileState tileState;
@@ -58,6 +64,12 @@ public class Pathfinding : MonoBehaviour {
                 return givenPath;
             }
         }
+    }
+
+    public class PathfindingInformation
+    {
+        public List<Vector2> m_path = new List<Vector2>();
+        public bool m_canReachTile = true;
     }
 
     private void Awake()
@@ -78,17 +90,28 @@ public class Pathfinding : MonoBehaviour {
 
         foreach (Blocker blocker in FindObjectsOfType<Blocker>())
         {
-            UpdatePathfindingMap(blocker.transform.position, TileState.Closed);
+            Vector2 pos = new Vector2(Mathf.RoundToInt(blocker.transform.position.x), Mathf.RoundToInt(blocker.transform.position.y)) / m_tileSize;
+            UpdatePathfindingMap(pos, TileState.Closed);
         }
+
+        m_pathfindingInformation = new PathfindingInformation();
+
+        m_initialised = true;
     }
 
-    //NOTE: pass in real-world positions into here- not array positions, we will convert from real-world to array in the function
-    private void UpdatePathfindingMap (Vector2 givenPosition, TileState givenTileState)
+    //NOTE: pass in array positions
+    public void UpdatePathfindingMap (Vector2 givenTilePosition, TileState givenTileState)
     {
-        Vector2 pos = new Vector2(Mathf.RoundToInt(givenPosition.x), Mathf.RoundToInt(givenPosition.y)) / m_tileSize;
-        if (IsWithinMapBounds((int)pos.x, (int)pos.y))
+        if (IsWithinMapBounds((int)givenTilePosition.x, (int)givenTilePosition.y))
         {
-            m_pathfindingMap[(int)pos.x, (int)pos.y] = givenTileState;
+            m_previousTileState = m_pathfindingMap[(int)givenTilePosition.x, (int)givenTilePosition.y];
+            m_pathfindingMap[(int)givenTilePosition.x, (int)givenTilePosition.y] = givenTileState;
+
+            //if a tile has changed state (ie an open tile is now closed, or vice versa, inform enemies so they can recalulate paths)
+            if (m_previousTileState != givenTileState && onPathfindingMapUpdated != null)
+            {
+                onPathfindingMapUpdated(givenTilePosition);
+            }
         }
     }
 
@@ -98,18 +121,17 @@ public class Pathfinding : MonoBehaviour {
             givenY >= 0 && givenY < m_pathfindingMap.GetLength(1);
     }
 
-    public List<Vector2> FindPath(Vector2 givenStartPosition, Vector2 givenEndPosition)
+    public PathfindingInformation FindPath(Vector2 givenStartPosition, Vector2 givenEndPosition)
     {
-        m_calculatedPath = new List<Vector2>();
         StartCoroutine(FindPathCoroutine(givenStartPosition, givenEndPosition, m_pathfindingMap));
-        return m_calculatedPath;
+        return m_pathfindingInformation;
     }
 
     //NOTE: pass in real-world positions into here- not array positions, we will convert from real-world to array in the function
     private IEnumerator FindPathCoroutine(Vector2 givenStartPosition, Vector2 givenEndPosition, TileState[,] givenPathfindingMap)
     {
-        m_start = new Vector2(Mathf.RoundToInt(givenStartPosition.x), Mathf.RoundToInt(givenStartPosition.y)) / m_tileSize;
-        m_end = new Vector2(Mathf.RoundToInt(givenEndPosition.x), Mathf.RoundToInt(givenEndPosition.y)) / m_tileSize;
+        m_start = new Vector2(Mathf.RoundToInt(givenStartPosition.x / m_tileSize), Mathf.RoundToInt(givenStartPosition.y / m_tileSize));
+        m_end = new Vector2(Mathf.RoundToInt(givenEndPosition.x / m_tileSize), Mathf.RoundToInt(givenEndPosition.y / m_tileSize));
 
         m_visitedTiles = new int[givenPathfindingMap.GetLength(0), givenPathfindingMap.GetLength(1)];
 
@@ -118,8 +140,8 @@ public class Pathfinding : MonoBehaviour {
         m_startTile = new Tile();
         m_endTile = new Tile();
 
-        m_startTile.m_position = givenStartPosition;
-        m_endTile.m_position = givenEndPosition;
+        m_startTile.m_position = m_start;
+        m_endTile.m_position = m_end;
 
         m_currentTile = m_startTile;
 
@@ -163,7 +185,7 @@ public class Pathfinding : MonoBehaviour {
             m_visitedTiles[(int)m_currentTile.m_position.x, (int)m_currentTile.m_position.y] = 1;
             m_openTiles.Remove(m_currentTile);
 
-            if (m_iterationCount > 500) //this prevents too much work being carried out in one frame, so the game won't freeze
+            if (m_iterationCount > 100) //this prevents too much work being carried out in one frame, so the game won't freeze
             {
                 m_iterationCount = 0;
                 yield return null;
@@ -171,26 +193,26 @@ public class Pathfinding : MonoBehaviour {
 
             if (m_openTiles.Count == 0) //explored all tiles, means we've tried to get to a blocked area
             {
-                print("can't reach tile");
-                m_unableToReachTile = true;
-                break;
+                m_pathfindingInformation = new PathfindingInformation();
+                m_pathfindingInformation.m_canReachTile = false;
+                StopCoroutine("FindPathCoroutine");
             }
         }
+    }
 
-        if (m_unableToReachTile)
+    private void CompileCoordinates ()
+    {
+        m_pathfindingInformation = new PathfindingInformation();
+
+        foreach (Tile tile in m_currentTile.FindTilePath(new List<Tile>()))
         {
-            m_calculatedPath = new List<Vector2>();
-        }
-
-        else
-        {
-            m_calculatedPath = new List<Vector2>();
-
-            foreach (Tile tileDetails in m_currentTile.FindTilePath(new List<Tile>()))
+            if (tile.m_position != m_startTile.m_position)
             {
-                m_calculatedPath.Add(tileDetails.m_position * m_tileSize);
+                m_pathfindingInformation.m_path.Add(tile.m_position * m_tileSize);
             }
         }
+
+        m_pathfindingInformation.m_path.Insert(0, m_endTile.m_position * m_tileSize);
     }
 
     private List<Tile> FindAdjacentTiles(Tile givenCurrentTile, Tile givenTargetTile, TileState[,] givenPathfindingMap)
@@ -214,12 +236,18 @@ public class Pathfinding : MonoBehaviour {
                     if (m_adjacentTile.tileState != TileState.Closed
                         && m_adjacentTile.m_position != givenCurrentTile.m_position)
                     {
-                        m_adjacentTile.m_directDistance = Vector2.Distance(m_adjacentTile.m_position, givenTargetTile.m_position) * 50f;
+                        m_adjacentTile.m_directDistance = Vector2.Distance(m_adjacentTile.m_position, givenTargetTile.m_position) / m_tileSize;
 
                         m_adjacentTile.m_previousTile = givenCurrentTile;
 
                         m_adjacentTile.m_pathCost += givenCurrentTile.m_pathCost;
                         m_adjacentTiles.Add(m_adjacentTile);
+                    }
+
+                    if (m_adjacentTile.m_position == m_endTile.m_position)
+                    {
+                        CompileCoordinates();
+                        StopCoroutine("FindPathCoroutine");
                     }
                 }
 
