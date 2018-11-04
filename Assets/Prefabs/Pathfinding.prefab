@@ -53,3 +53,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_mapSize: {x: 10, y: 10}
   m_tileSize: 2
+  m_initialised: 0

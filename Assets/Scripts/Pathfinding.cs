@@ -6,7 +6,7 @@ public class Pathfinding : MonoBehaviour {
 
     public static Pathfinding Instance;
 
-    public delegate void OnPathfindingMapUpdated(Vector2 position);
+    public delegate void OnPathfindingMapUpdated(Vector2 position, Enemy sender);
     public static OnPathfindingMapUpdated onPathfindingMapUpdated;
 
     public enum TileState
@@ -38,7 +38,7 @@ public class Pathfinding : MonoBehaviour {
 
     private PathfindingInformation m_pathfindingInformation;
 
-    private TileState[,] m_pathfindingMap;
+    public TileState[,] m_pathfindingMap;
     private int[,] m_visitedTiles;
 
     private TileState m_previousTileState;
@@ -88,10 +88,18 @@ public class Pathfinding : MonoBehaviour {
     {
         m_pathfindingMap = new TileState[(int)m_mapSize.x, (int)m_mapSize.y];
 
+        int priority = 0;
+
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        {
+            enemy.m_priority = priority;
+            priority++;
+        }
+
         foreach (Blocker blocker in FindObjectsOfType<Blocker>())
         {
             Vector2 pos = new Vector2(Mathf.RoundToInt(blocker.transform.position.x), Mathf.RoundToInt(blocker.transform.position.y)) / m_tileSize;
-            UpdatePathfindingMap(pos, TileState.Closed);
+            UpdatePathfindingMap(pos, TileState.Closed, null);
         }
 
         m_pathfindingInformation = new PathfindingInformation();
@@ -100,7 +108,7 @@ public class Pathfinding : MonoBehaviour {
     }
 
     //NOTE: pass in array positions
-    public void UpdatePathfindingMap (Vector2 givenTilePosition, TileState givenTileState)
+    public void UpdatePathfindingMap (Vector2 givenTilePosition, TileState givenTileState, Enemy sender)
     {
         if (IsWithinMapBounds((int)givenTilePosition.x, (int)givenTilePosition.y))
         {
@@ -110,7 +118,7 @@ public class Pathfinding : MonoBehaviour {
             //if a tile has changed state (ie an open tile is now closed, or vice versa, inform enemies so they can recalulate paths)
             if (m_previousTileState != givenTileState && onPathfindingMapUpdated != null)
             {
-                onPathfindingMapUpdated(givenTilePosition);
+                onPathfindingMapUpdated(givenTilePosition, sender);
             }
         }
     }
@@ -212,7 +220,7 @@ public class Pathfinding : MonoBehaviour {
             }
         }
 
-        m_pathfindingInformation.m_path.Insert(0, m_endTile.m_position * m_tileSize);
+        //m_pathfindingInformation.m_path.Insert(0, m_endTile.m_position * m_tileSize);
     }
 
     private List<Tile> FindAdjacentTiles(Tile givenCurrentTile, Tile givenTargetTile, TileState[,] givenPathfindingMap)
