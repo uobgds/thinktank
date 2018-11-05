@@ -43,7 +43,10 @@ public class InputManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        input.updateInput();
+        if (input != null)
+        {
+            input.updateInput();
+        }
 
     }
 }
