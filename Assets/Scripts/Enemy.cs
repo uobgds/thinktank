@@ -6,11 +6,14 @@ public class Enemy : Blocker {
 
     public GameObject tempTarget;
 
+    [Header("Patrols")]
     [SerializeField]
     private bool m_shouldPatrol;
-
+    [SerializeField, Tooltip("When this agent reaches the end of the path, should they retrace their steps or loop")]
+    private bool m_isLooping;
     [SerializeField]
     private List<Transform> m_patrolPoints;
+    [Space(10)]
 
     private Pathfinding.PathfindingInformation m_pathfindingInformation;
 
@@ -51,12 +54,12 @@ public class Enemy : Blocker {
         Pathfinding.onPathfindingMapUpdated -= OnPathfindingMapUpdated;
     }
 
-    private void OnPathfindingMapUpdated (Vector2 givenTilePosition, Enemy sender)
+    private void OnPathfindingMapUpdated (Vector2 givenTilePosition, Blocker blocker)
     {
-        if (sender && sender != this && sender.m_priority < m_priority
+        if (blocker && blocker.GetComponent<Enemy>() && blocker != this && blocker.GetComponent<Enemy>().m_priority < m_priority
             && Pathfinding.Instance.m_initialised)
         {
-            if (RoundVector(sender.transform.position, true) != RoundVector(transform.position, true))
+            if (RoundVector(blocker.transform.position, true) != RoundVector(transform.position, true))
             {
                 FindNextPosition();
             }
@@ -80,7 +83,7 @@ public class Enemy : Blocker {
             else if (!m_initialised)
             {
                 m_initialised = true;
-                Pathfinding.Instance.UpdatePathfindingMap(RoundVector(m_currentPosition, true), Pathfinding.TileState.Closed, this);
+                Pathfinding.Instance.UpdatePathfindingMap(RoundVector(m_currentPosition, true), Pathfinding.TileState.TempClosed, this);
                 FindNextPosition();
             }
 
@@ -92,7 +95,7 @@ public class Enemy : Blocker {
             }
             if (m_pathfindingInformation.m_path.Count == 0)
             {
-                Pathfinding.Instance.UpdatePathfindingMap(RoundVector(transform.position, true), Pathfinding.TileState.Closed, this);
+                Pathfinding.Instance.UpdatePathfindingMap(RoundVector(transform.position, true), Pathfinding.TileState.TempClosed, this);
             }
 
             //if distance from current pos to end tile is more than one tile away - otherwise, no movement
@@ -159,7 +162,7 @@ public class Enemy : Blocker {
 
             m_currentPosition = RoundVector(transform.position);
 
-            Pathfinding.Instance.UpdatePathfindingMap(RoundVector(m_currentPosition, true), Pathfinding.TileState.Closed, this);
+            Pathfinding.Instance.UpdatePathfindingMap(RoundVector(m_currentPosition, true), Pathfinding.TileState.TempClosed, this);
         }
         else
         {
@@ -182,6 +185,7 @@ public class Enemy : Blocker {
         else
         {
             m_pathfindingInformation = Pathfinding.Instance.FindPath(transform.position, tempTarget.transform.position);
+
             if (m_pathfindingInformation.m_canReachTile && m_pathfindingInformation.m_path.Count > 0)
             {
                 m_canReachTarget = true;

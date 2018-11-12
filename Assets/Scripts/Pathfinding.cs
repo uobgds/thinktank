@@ -6,12 +6,12 @@ public class Pathfinding : MonoBehaviour {
 
     public static Pathfinding Instance;
 
-    public delegate void OnPathfindingMapUpdated(Vector2 position, Enemy sender);
+    public delegate void OnPathfindingMapUpdated(Vector2 position, Blocker sender);
     public static OnPathfindingMapUpdated onPathfindingMapUpdated;
 
     public enum TileState
     {
-        Open, Closed
+        Open, Closed, TempClosed //tempclosed is when an enemy is on tile
     }
 
     [SerializeField]
@@ -99,7 +99,15 @@ public class Pathfinding : MonoBehaviour {
         foreach (Blocker blocker in FindObjectsOfType<Blocker>())
         {
             Vector2 pos = new Vector2(Mathf.RoundToInt(blocker.transform.position.x), Mathf.RoundToInt(blocker.transform.position.y)) / m_tileSize;
-            UpdatePathfindingMap(pos, TileState.Closed, null);
+
+            if (blocker.GetComponent<Enemy>())
+            {
+                UpdatePathfindingMap(pos, TileState.TempClosed, blocker);
+            }
+            else
+            {
+                UpdatePathfindingMap(pos, TileState.Closed, blocker);
+            }
         }
 
         m_pathfindingInformation = new PathfindingInformation();
@@ -108,17 +116,21 @@ public class Pathfinding : MonoBehaviour {
     }
 
     //NOTE: pass in array positions
-    public void UpdatePathfindingMap (Vector2 givenTilePosition, TileState givenTileState, Enemy sender)
+    public void UpdatePathfindingMap (Vector2 givenTilePosition, TileState givenTileState, Blocker blocker)
     {
         if (IsWithinMapBounds((int)givenTilePosition.x, (int)givenTilePosition.y))
         {
             m_previousTileState = m_pathfindingMap[(int)givenTilePosition.x, (int)givenTilePosition.y];
-            m_pathfindingMap[(int)givenTilePosition.x, (int)givenTilePosition.y] = givenTileState;
 
-            //if a tile has changed state (ie an open tile is now closed, or vice versa, inform enemies so they can recalulate paths)
-            if (m_previousTileState != givenTileState && onPathfindingMapUpdated != null)
+            if (m_previousTileState != TileState.Closed)
             {
-                onPathfindingMapUpdated(givenTilePosition, sender);
+                m_pathfindingMap[(int)givenTilePosition.x, (int)givenTilePosition.y] = givenTileState;
+
+                //if a tile has changed state (ie an open tile is now closed, or vice versa, inform enemies so they can recalulate paths)
+                if (m_previousTileState != givenTileState && onPathfindingMapUpdated != null)
+                {
+                    onPathfindingMapUpdated(givenTilePosition, blocker);
+                }
             }
         }
     }
@@ -241,7 +253,7 @@ public class Pathfinding : MonoBehaviour {
                 {
                     m_adjacentTile.tileState = givenPathfindingMap[(int)m_adjacentTile.m_position.x, (int)m_adjacentTile.m_position.y];
                     //tile is within the map bounds and is not an obstacle
-                    if (m_adjacentTile.tileState != TileState.Closed
+                    if (m_adjacentTile.tileState == TileState.Open
                         && m_adjacentTile.m_position != givenCurrentTile.m_position)
                     {
                         m_adjacentTile.m_directDistance = Vector2.Distance(m_adjacentTile.m_position, givenTargetTile.m_position) / m_tileSize;
