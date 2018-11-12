@@ -7,11 +7,13 @@ using UnityEngine.UI;
 public class UI_Tutorial : MonoBehaviour {
 
     public string levelSelectSceneName;
-    public Button bSkipTutorial;
+    public string backSceneName;
+    public Button bSkipTutorial, bBack;
 
 	// Use this for initialization
 	void Start () {
         bSkipTutorial.onClick.AddListener(onSkipTutorial);
+        bBack.onClick.AddListener(onBack);
 	}
 	
 	// Update is called once per frame
@@ -22,5 +24,10 @@ public class UI_Tutorial : MonoBehaviour {
     void onSkipTutorial()
     {
         SceneManager.LoadScene(levelSelectSceneName);
+    }
+
+    void onBack()
+    {
+        SceneManager.LoadScene(backSceneName);
     }
 }

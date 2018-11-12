@@ -7,14 +7,15 @@ using UnityEngine.UI;
 public class UI_SelectDifficulty : MonoBehaviour {
 
     public string tutorialSceneName;
-    public Button bEasy, bMedium, bHard, bContinue;
+    public string backSceneName;
+    public Button bEasy, bMedium, bHard, bBack;
 
 	// Use this for initialization
 	void Start () {
         bEasy.onClick.AddListener(setEasy);
         bMedium.onClick.AddListener(setMedium);
         bHard.onClick.AddListener(setHard);
-        bContinue.onClick.AddListener(onContinueClick);
+        bBack.onClick.AddListener(onBack);
 	}
 	
 	// Update is called once per frame
@@ -25,20 +26,28 @@ public class UI_SelectDifficulty : MonoBehaviour {
     void setEasy()
     {
         GameSettings.difficulty = Difficulty.Easy;
+        onContinue();
     }
 
     void setMedium()
     {
         GameSettings.difficulty = Difficulty.Medium;
+        onContinue();
     }
 
     void setHard()
     {
         GameSettings.difficulty = Difficulty.Hard;
+        onContinue();
     }
 
-    void onContinueClick()
+    void onContinue()
     {
         SceneManager.LoadScene(tutorialSceneName);
+    }
+
+    void onBack()
+    {
+        SceneManager.LoadScene(backSceneName);
     }
 }

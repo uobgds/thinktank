@@ -190,7 +190,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &757020249
+--- !u!1001 &787711908
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -286,6 +286,16 @@ Prefab:
         type: 2}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224977361155261996, guid: 7410e210973209940ae704f0d6573559,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -105
+      objectReference: {fileID: 0}
+    - target: {fileID: 224977361155261996, guid: 7410e210973209940ae704f0d6573559,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: -323
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7410e210973209940ae704f0d6573559, type: 2}
