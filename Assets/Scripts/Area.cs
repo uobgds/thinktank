@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Area : MonoBehaviour {
+public class Area : Blocker {
 
     [SerializeField]
     private AreaDetails m_areaDetails;
