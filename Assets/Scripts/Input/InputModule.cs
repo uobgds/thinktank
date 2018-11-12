@@ -4,9 +4,11 @@ using UnityEngine;
 
 public abstract class InputModule {
 
-    protected readonly float MAX_SPEED = 10f;
+    protected readonly float MAX_SPEED = 0.1f;
 
     public Vector2 position;
+
+    public float rotation;
 
     public int shapeNum;
 
