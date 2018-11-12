@@ -6,14 +6,14 @@ using UnityEngine.UI;
 
 public class UI_MainMenu : MonoBehaviour {
 
-    public string levelOneSceneName;
-    public Button playGameButton, viewHighScoresButton;
+    public string playGameSceneName;
+    public Button bPlayGame, bViewHighScores;
     
     
 	// Use this for initialization
 	void Start () {
-        playGameButton.onClick.AddListener(playGame);
-        viewHighScoresButton.onClick.AddListener(viewHighScores);
+        bPlayGame.onClick.AddListener(playGame);
+        bViewHighScores.onClick.AddListener(viewHighScores);
 	}
 	
 	// Update is called once per frame
@@ -23,7 +23,7 @@ public class UI_MainMenu : MonoBehaviour {
 
     void playGame()
     {
-        SceneManager.LoadScene(levelOneSceneName);
+        SceneManager.LoadScene(playGameSceneName);
     }
     
     void viewHighScores()
