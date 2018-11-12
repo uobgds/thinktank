@@ -31,6 +31,7 @@ public class InputManager : MonoBehaviour {
     {
         public Vector2 position;
         public RobotShape shape;
+        public float rotation;
     }
 
     public RobotInput getRobotInput()
@@ -38,6 +39,7 @@ public class InputManager : MonoBehaviour {
         RobotInput inputInfo = new RobotInput();
         inputInfo.position = input.position;
         inputInfo.shape = (RobotShape) input.shapeNum;
+        inputInfo.rotation = input.rotation;
         return inputInfo;
     }
 	
