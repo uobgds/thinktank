@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [System.Serializable]
-public struct UI_Level
+public struct S_UI_Level
 {
     public Sprite thumbnail;
     public string levelSceneName;
@@ -13,8 +13,9 @@ public struct UI_Level
 
 public class UI_SelectLevel : MonoBehaviour {
 
-    public UI_Level[] levels;
-    public Button bLeft, bRight, b_Select;
+    public S_UI_Level[] levels;
+    public string backSceneName;
+    public Button bLeft, bRight, bSelect, bBack;
     public Image currentLevelImage;
 
     private int currentLevelIndex;
@@ -24,7 +25,8 @@ public class UI_SelectLevel : MonoBehaviour {
         currentLevelImage.sprite = levels[currentLevelIndex].thumbnail;
         bLeft.onClick.AddListener(onLeftArrowClick);
         bRight.onClick.AddListener(onRightArrowClick);
-        b_Select.onClick.AddListener(onSelectLevel);
+        bSelect.onClick.AddListener(onSelectLevel);
+        bBack.onClick.AddListener(onBack);
 	}
 	
     void onSelectLevel()
@@ -49,6 +51,12 @@ public class UI_SelectLevel : MonoBehaviour {
             currentLevelImage.sprite = levels[currentLevelIndex].thumbnail;
         }
     }
+
+    void onBack()
+    {
+        SceneManager.LoadScene(backSceneName);
+    }
+
 	// Update is called once per frame
 	void Update () {
 		
