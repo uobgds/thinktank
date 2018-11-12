@@ -24,6 +24,12 @@ public class KeyboardInput : InputModule {
             shapeNum = ++shapeNum % InputManager.NUMBEROFSHAPES;
 
         }
+
+        //Deals with the rotation of the object, goes round in jumps up 90 degrees
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            rotation = (rotation + 90) % 360;
+        }
     }
 
 }
