@@ -6,21 +6,21 @@ public class Area : Blocker {
 
     [SerializeField]
     private AreaDetails m_areaDetails;
-    //private PlayerController m_playerController;
+    private PlayerController m_playerController;
 
     public delegate void OnAreaStay(AreaDetails m_areaDetails);
     public static OnAreaStay onAreaStay;
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        //m_playerController = collision.GetComponent<PlayerController>();
-        //if (m_playerController)
-        //{
-        //    if (onAreaStay != null)
-        //    {
-        //        onAreaStay(m_areaDetails);
-        //    }
-        //}
+        m_playerController = collision.GetComponent<PlayerController>();
+        if (m_playerController)
+        {
+            if (onAreaStay != null)
+            {
+                onAreaStay(m_areaDetails);
+            }
+        }
     }
 
 }
