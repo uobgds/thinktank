@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour {
 
         transform.position = currentInput.position;
 
-        transform.rotation = Quaternion.Euler(new Vector3(0, 0, -currentInput.rotation));
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, currentInput.rotation));
 
         switch (currentInput.shape)
         {
