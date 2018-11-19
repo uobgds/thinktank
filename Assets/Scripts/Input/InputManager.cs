@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour {
 
-    InputModule input;
+    public InputModule input;
 
     public enum InputType { KEYBOARD };
 
@@ -21,7 +21,7 @@ public class InputManager : MonoBehaviour {
 
     public enum RobotShape
     {
-        SQUIGGLY_LINE, LINE, U_SHAPE
+        LINE, SQUIGGLY_LINE, U_SHAPE
     }
 
 
