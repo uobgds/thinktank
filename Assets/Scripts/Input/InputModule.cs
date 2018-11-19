@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public abstract class InputModule {
 
     protected readonly float MAX_SPEED = 0.1f;
@@ -18,6 +19,16 @@ public abstract class InputModule {
     {
         position = new Vector2(0, 0);
         shapeNum = 1;
+    }
+
+    protected Vector2 getForwardVector(float speed)
+    {
+        float xComp = Mathf.Cos(rotation * Mathf.Deg2Rad);
+        float yComp = Mathf.Sin(rotation * Mathf.Deg2Rad);
+
+        Debug.Log(xComp + " " + yComp);
+
+        return new Vector2(xComp * speed, yComp * speed);
     }
 
 

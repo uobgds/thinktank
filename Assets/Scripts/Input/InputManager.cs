@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour {
 
-    InputModule input;
+    public InputModule input;
 
     public enum InputType { KEYBOARD };
 
