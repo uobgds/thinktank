@@ -10,16 +10,11 @@ public class InputManager : MonoBehaviour {
     [SerializeField]
     private GameObject gameInfo;
 
-    private GameManager gameManager;
+
 
     public enum InputType { KEYBOARD };
 
 
-    // Use this for initialization
-    void Start()
-    {
-        gameManager = gameInfo.GetComponent<GameManager>();
-    }
 
     public void ChangeInputType(InputType type)
     {
