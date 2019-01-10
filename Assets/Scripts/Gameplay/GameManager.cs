@@ -22,6 +22,9 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private Vector2 xBounds;
 
+    [SerializeField]
+    private float completion;
+
     public Vector2 ClampInRange(Vector2 myPosition)
     {
         float newX = Mathf.Clamp(myPosition[0], xBounds[0], xBounds[1]);
@@ -38,7 +41,19 @@ public class GameManager : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		
+	void FixedUpdate () {
+        // check completion
+        CheckCompletion();
 	}
+
+    void CheckCompletion()
+    {
+        // TODO check the various goals for completion
+        // TODO also compute the percentage
+    }
+
+    public float GetCompletionPercent()
+    {
+        return completion;
+    }
 }
