@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private float myAntidote;
 
+    [SerializeField]
+    private float decayRate = 0.1f;
+
     public float GetAntidotePercent()
     {
         return myAntidote;
@@ -47,10 +50,13 @@ public class PlayerController : MonoBehaviour {
         anim = GetComponent<Animator>();
 	}
 
- 
-	
-	// Update is called once per frame
-	void Update () {
+    private void FixedUpdate()
+    {
+        myAntidote -= decayRate * Time.deltaTime;
+    }
+
+    // Update is called once per frame
+    void Update () {
 
         currentInput = input.getRobotInput();
 
