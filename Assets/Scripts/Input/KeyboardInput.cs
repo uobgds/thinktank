@@ -54,6 +54,8 @@ public class KeyboardInput : InputModule {
                 position[1] = position[1] + directionVector[1];
                 break;
         }
+
+        position = GameManager.myManager.ClampInRange(position);
     }
 
 }

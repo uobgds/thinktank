@@ -15,11 +15,9 @@ public abstract class InputModule {
 
     public abstract void updateInput();
 
-    private void Start()
-    {
-        position = new Vector2(0, 0);
-        shapeNum = 1;
-    }
+
+   
+  
 
     protected Vector2 getForwardVector(float speed)
     {
