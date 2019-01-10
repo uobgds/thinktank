@@ -34,19 +34,16 @@ public class PlayerController : MonoBehaviour {
                 anim.SetBool("snake", false);
                 anim.SetBool("u", false);
                 anim.SetBool("line", true);
-                Debug.Log("Line");
                 break;
             case InputManager.RobotShape.SQUIGGLY_LINE:
                 anim.SetBool("u", false);
                 anim.SetBool("line", false);
                 anim.SetBool("snake", true);
-                Debug.Log("Squigly Line");
                 break;
             case InputManager.RobotShape.U_SHAPE:
                 anim.SetBool("line", false);
                 anim.SetBool("snake", false);
                 anim.SetBool("u", true);
-                Debug.Log("U");
                 break;
         }
 	}
