@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HUD : MonoBehaviour {
+public class HUD : MonoBehaviour
+{
 
     [SerializeField]
     private RectTransform completionBar;
@@ -30,11 +31,16 @@ public class HUD : MonoBehaviour {
 
     void OnPreRender()
     {
-        if(player == null)
+        if (player == null)
         {
             return;
         }
-        // TODO get the data from the player for the bars
+        float antidote = player.GetAntidotePercent();
+        SetAntidote(antidote);
+
+        float completion = GameManager.myManager.GetCompletionPercent();
+        SetCompletion(completion);
+
     }
 
 
