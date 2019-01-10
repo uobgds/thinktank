@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GoalArea : MonoBehaviour {
 
+    public static List<GoalArea> goals = new List<GoalArea>();
+
     [SerializeField]
     private float rate = 0.5f;
 
@@ -11,7 +13,17 @@ public class GoalArea : MonoBehaviour {
 
     void Start()
     {
-        // TODO register this goal area
+        goals.Add(this);
+    }
+
+    void OnDestroy()
+    {
+        goals.Remove(this);
+    }
+
+    public float GetSatisfaction()
+    {
+        return completion;
     }
 
     void OnTriggerStay(Collider other)
@@ -27,6 +39,6 @@ public class GoalArea : MonoBehaviour {
         float desiredLoss = Mathf.Min(1 - completion, rate * Time.deltaTime);
 
         float value = pl.SubtractAntidote(desiredLoss);
-        completion += value;
+        completion = Mathf.Clamp01(completion + value);
     }
 }
