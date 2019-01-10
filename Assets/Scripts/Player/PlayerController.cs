@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,9 +20,28 @@ public class PlayerController : MonoBehaviour {
         return myAntidote;
     }
 
+    public void FillAntidote(float rate)
+    {
+        myAntidote += rate * Time.deltaTime;
+        myAntidote = Mathf.Clamp01(myAntidote);
+    }
 
-	// Use this for initialization
-	void Start () {
+    /// <summary>
+    /// reduces the antidote by "amount"
+    /// </summary>
+    /// <param name="amount"></param>
+    /// <returns> the amount of antidote subtracted</returns>
+    public float SubtractAntidote(float amount)
+    {
+        float newAntidote = Mathf.Clamp01(myAntidote - amount);
+        float diff = myAntidote - newAntidote;
+        myAntidote = newAntidote;
+        return diff;
+    }
+
+
+    // Use this for initialization
+    void Start () {
         input = GetComponent<InputManager>();
         input.ChangeInputType(InputManager.InputType.KEYBOARD);
         anim = GetComponent<Animator>();
