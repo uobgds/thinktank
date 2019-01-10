@@ -6,8 +6,9 @@ public class AntidoteSource : MonoBehaviour {
 
     public float rate = 1.618f;
 
-    void OnTriggerStay(Collider other)
+    void OnTriggerStay2D(Collider2D other)
     {
+        Debug.Log("SOURCE");
         PlayerController pl = other.GetComponent<PlayerController>();
 
         if (pl == null)

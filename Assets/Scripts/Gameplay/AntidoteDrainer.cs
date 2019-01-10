@@ -5,10 +5,10 @@ using UnityEngine;
 public class AntidoteDrainer : MonoBehaviour
 {
 
+    [SerializeField]
+    private float drainageRate = -0.125f;
 
-    private float drainageRate = -0.5f;
-
-    void OnTriggerStay(Collider other)
+    void OnTriggerStay2D(Collider2D other)
     {
         PlayerController pl = other.GetComponent<PlayerController>();
 
@@ -17,6 +17,8 @@ public class AntidoteDrainer : MonoBehaviour
             return;
         }
 
+        float speed = pl.GetDrainSpeed();
+        drainageRate -= speed;
         pl.FillAntidote(drainageRate);
         
     }
