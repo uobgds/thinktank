@@ -6,9 +6,19 @@ public class PlayerController : MonoBehaviour {
 
     //BY SOPHIE
 
+
     InputManager input;
     InputManager.RobotInput currentInput;
     Animator anim;
+
+    [SerializeField]
+    private float myAntidote;
+
+    public float GetAntidotePercent()
+    {
+        return myAntidote;
+    }
+
 
 	// Use this for initialization
 	void Start () {
