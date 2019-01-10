@@ -26,15 +26,11 @@ public class HUD : MonoBehaviour
     {
         SetAntidote(0);
         SetCompletion(0);
-        player = GameObject.FindObjectOfType<PlayerController>();
+        player = FindObjectOfType<PlayerController>();
     }
 
-    void OnPreRender()
+    void FixedUpdate()
     {
-        if (player == null)
-        {
-            return;
-        }
         float antidote = player.GetAntidotePercent();
         SetAntidote(antidote);
 
@@ -46,8 +42,7 @@ public class HUD : MonoBehaviour
 
     public void SetAntidote(float percent)
     {
-        float val = 100 * percent;
-        antidoteText.text = string.Format("{0:c1}%", val);
+        antidoteText.text = string.Format("{0:0%}", percent);
         Vector2 s = antidoteBar.sizeDelta;
         s.y = Mathf.Lerp(0, antidoteBarHeight, percent);
         antidoteBar.sizeDelta = s;
@@ -55,8 +50,7 @@ public class HUD : MonoBehaviour
 
     public void SetCompletion(float percent)
     {
-        float val = 100 * percent;
-        completionText.text = string.Format("{0:c1}%", val);
+        completionText.text = string.Format("{0:0%}", percent);
         Vector2 s = completionBar.sizeDelta;
         s.x = Mathf.Lerp(0, completionBarWidth, percent);
         completionBar.sizeDelta = s;
