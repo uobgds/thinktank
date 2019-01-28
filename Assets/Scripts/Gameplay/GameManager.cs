@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class GameManager : MonoBehaviour {
 
 
@@ -25,6 +27,9 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private float completion;
 
+    [SerializeField]
+    private HealthLossRatesByDifficulty healthLossRatesByDifficulty;
+
     public Vector2 ClampInRange(Vector2 myPosition)
     {
         float newX = Mathf.Clamp(myPosition[0], xBounds[0], xBounds[1]);
@@ -45,6 +50,24 @@ public class GameManager : MonoBehaviour {
         // check completion
         CheckCompletion();
 	}
+
+    public static float GetHealthLossRate()
+    {
+        switch (GameSettings.difficulty)
+        {
+            case Difficulty.Tutorial:
+                return myManager.healthLossRatesByDifficulty.TutorialHealthLossRate;
+            case Difficulty.Easy:
+                return myManager.healthLossRatesByDifficulty.EasyHealthLossRate;
+            case Difficulty.Medium:
+                return myManager.healthLossRatesByDifficulty.MediumHealthLossRate;
+            case Difficulty.Hard:
+                return myManager.healthLossRatesByDifficulty.HardHealthLossRate;
+            default:
+                Debug.LogError("Difficulty is not set!");
+                return 0f;
+        }
+    }
 
     void CheckCompletion()
     {
@@ -68,4 +91,13 @@ public class GameManager : MonoBehaviour {
     {
         return completion;
     }
+}
+
+[System.Serializable]
+public struct HealthLossRatesByDifficulty
+{
+    public float TutorialHealthLossRate;
+    public float EasyHealthLossRate;
+    public float MediumHealthLossRate;
+    public float HardHealthLossRate;
 }
