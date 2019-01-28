@@ -5,8 +5,8 @@ using UnityEngine;
 public class AntidoteDrainer : MonoBehaviour
 {
 
-    [SerializeField]
-    private float drainageRate = -0.125f;
+ //   [SerializeField]
+ //   private float drainageRate = -0.125f;
 
     void OnTriggerStay2D(Collider2D other)
     {
@@ -16,10 +16,10 @@ public class AntidoteDrainer : MonoBehaviour
         {
             return;
         }
-
-        float speed = pl.GetDrainSpeed();
-        drainageRate -= speed;
-        pl.FillAntidote(drainageRate);
+        pl.DamageHealth(GameManager.GetHealthLossRate() * Time.deltaTime);
+ //       float speed = pl.GetDrainSpeed();
+ //       drainageRate -= speed;
+ //       pl.FillAntidote(drainageRate);
         
     }
 }
