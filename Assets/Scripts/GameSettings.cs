@@ -4,11 +4,12 @@ using UnityEngine;
 
 public enum Difficulty
 {
+    Tutorial,
     Easy,
     Medium,
     Hard
 }
 
 public static class GameSettings {
-    public static Difficulty difficulty;
+    public static Difficulty difficulty = Difficulty.Tutorial;
 }

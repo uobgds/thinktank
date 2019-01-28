@@ -7,20 +7,46 @@ public class PlayerController : MonoBehaviour {
 
     //BY SOPHIE
 
-
+    
     InputManager input;
     InputManager.RobotInput currentInput;
     Animator anim;
 
     [SerializeField]
     private float myAntidote;
+    [SerializeField]
+    [Range(0,1)]
+    private float myHealth;
 
     [SerializeField]
-    private float decayRate = 0.1f;
+    private float decayRate = 0.015f;
+    private bool moving;
+    private Vector2 lastPos;
+    [SerializeField]
+    private float moveDrain = 0.3f;
 
     public float GetAntidotePercent()
     {
         return myAntidote;
+    }
+
+    public float GetHealthPercent()
+    {
+        return myHealth;
+    }
+
+    public void DamageHealth(float damage)
+    {
+        myHealth = Mathf.Clamp01(myHealth - damage);
+    }
+
+    internal float GetDrainSpeed()
+    {
+        if (moving)
+        {
+            return moveDrain * Time.deltaTime;
+        }
+        return 0;
     }
 
     public void FillAntidote(float rate)
@@ -53,6 +79,7 @@ public class PlayerController : MonoBehaviour {
     private void FixedUpdate()
     {
         myAntidote -= decayRate * Time.deltaTime;
+        myAntidote = Mathf.Clamp01(myAntidote);
     }
 
     // Update is called once per frame
@@ -61,6 +88,9 @@ public class PlayerController : MonoBehaviour {
         currentInput = input.getRobotInput();
 
         transform.position = currentInput.position;
+        float dist = (lastPos - currentInput.position).sqrMagnitude;
+        moving = !Mathf.Approximately(dist, 0);
+        lastPos = currentInput.position;
 
         transform.rotation = Quaternion.Euler(new Vector3(0, 0, currentInput.rotation));
 

@@ -26,7 +26,7 @@ public class GoalArea : MonoBehaviour {
         return completion;
     }
 
-    void OnTriggerStay(Collider other)
+    void OnTriggerStay2D(Collider2D other)
     {
         PlayerController pl = other.GetComponent<PlayerController>();
         GameManager gm = GameManager.myManager;

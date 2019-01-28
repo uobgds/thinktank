@@ -12,6 +12,7 @@ public class HUD : MonoBehaviour
     private Text completionText;
     [SerializeField]
     private float completionBarWidth = 100;
+
     [SerializeField]
     private RectTransform antidoteBar;
     [SerializeField]
@@ -21,6 +22,13 @@ public class HUD : MonoBehaviour
     [SerializeField]
     private float antidoteBarFullY = 0;
 
+    [SerializeField]
+    private RectTransform healthBar;
+    [SerializeField]
+    private Text healthText;
+    [SerializeField]
+    private float healthBarWidth = 100;
+
     private PlayerController player;
 
 
@@ -28,6 +36,7 @@ public class HUD : MonoBehaviour
     {
         SetAntidote(0);
         SetCompletion(0);
+        SetHealth(1);
         player = FindObjectOfType<PlayerController>();
     }
 
@@ -38,6 +47,9 @@ public class HUD : MonoBehaviour
 
         float completion = GameManager.myManager.GetCompletionPercent();
         SetCompletion(completion);
+
+        float health = player.GetHealthPercent();
+        SetHealth(health);
 
     }
 
@@ -56,5 +68,13 @@ public class HUD : MonoBehaviour
         Vector2 s = completionBar.sizeDelta;
         s.x = Mathf.Lerp(0, completionBarWidth, percent);
         completionBar.sizeDelta = s;
+    }
+
+    public void SetHealth(float percent)
+    {
+        healthText.text = string.Format("{0:0%}", percent);
+        Vector2 s = healthBar.sizeDelta;
+        s.x = Mathf.Lerp(0, healthBarWidth, percent);
+        healthBar.sizeDelta = s;
     }
 }
