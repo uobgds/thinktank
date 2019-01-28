@@ -106,11 +106,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1325346040565892}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff0c1ecd1c23cb84dbe8ba1a53799c0d, type: 3}
+  m_Script: {fileID: 11500000, guid: bf9c3a6f7c8373741a69c57c80b93815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   myAntidote: 0
+  myHealth: 0
   decayRate: 0.015
+  moveDrain: 0.3
 --- !u!114 &114689436499036380
 MonoBehaviour:
   m_ObjectHideFlags: 1
