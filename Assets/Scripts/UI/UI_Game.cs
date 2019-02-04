@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class InputManager : MonoBehaviour {
+public class UI_Game : MonoBehaviour {
 
-    public Vector2 Position = new Vector2(0, 0);
+    public Slider sMedicine;
 
 	// Use this for initialization
 	void Start () {
@@ -13,6 +14,5 @@ public class InputManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
 	}
 }
