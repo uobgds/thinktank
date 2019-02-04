@@ -16,9 +16,7 @@ public class KeyboardInput : InputModule {
         {
             shapeNum = ++shapeNum % InputManager.NUMBEROFSHAPES;
 
-        }
-
-       
+        }     
 
         switch((InputManager.RobotShape) shapeNum)
         {
@@ -55,8 +53,9 @@ public class KeyboardInput : InputModule {
                 position[0] = position[0] + directionVector[0];
                 position[1] = position[1] + directionVector[1];
                 break;
-
         }
+
+        position = GameManager.myManager.ClampInRange(position);
     }
 
 }

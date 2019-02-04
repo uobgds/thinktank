@@ -7,7 +7,14 @@ public class InputManager : MonoBehaviour {
 
     public InputModule input;
 
+    [SerializeField]
+    private GameObject gameInfo;
+
+
+
     public enum InputType { KEYBOARD };
+
+
 
     public void ChangeInputType(InputType type)
     {
