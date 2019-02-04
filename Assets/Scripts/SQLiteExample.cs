@@ -14,9 +14,13 @@ namespace ExampleProject
         {
             dbPath = "URI=file:" + Application.persistentDataPath + "/exampleDatabase.db";
             CreateSchema();
-            InsertScore("GG Meade", 3701);
-            InsertScore("US Grant", 4242);
-            InsertScore("GB McClellan", 107);
+            ClearDatabase();
+            InsertScore("User1", 3701);
+            InsertScore("User2", 4242);
+            InsertScore("User3", 107);
+            InsertScore("User4", 3001);
+            InsertScore("User5", 445);
+            InsertScore("User6", 1076);
             GetHighScores(10);
         }
 
@@ -99,6 +103,21 @@ namespace ExampleProject
                 }
             }
         }
+
+        public void ClearDatabase()
+        {
+            using (var conn = new SqliteConnection(dbPath))
+            {
+                conn.Open();
+                using(var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = "DELETE from high_score";
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
     }
 
 }
