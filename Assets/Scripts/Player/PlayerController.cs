@@ -7,16 +7,19 @@ public class PlayerController : MonoBehaviour {
 
     //BY SOPHIE
 
-
+    
     InputManager input;
     InputManager.RobotInput currentInput;
     Animator anim;
 
     [SerializeField]
     private float myAntidote;
+    [SerializeField]
+    [Range(0,1)]
+    private float myHealth;
 
     [SerializeField]
-    private float decayRate = 0.1f;
+    private float decayRate = 0.015f;
     private bool moving;
     private Vector2 lastPos;
     [SerializeField]
@@ -25,6 +28,16 @@ public class PlayerController : MonoBehaviour {
     public float GetAntidotePercent()
     {
         return myAntidote;
+    }
+
+    public float GetHealthPercent()
+    {
+        return myHealth;
+    }
+
+    public void DamageHealth(float damage)
+    {
+        myHealth = Mathf.Clamp01(myHealth - damage);
     }
 
     internal float GetDrainSpeed()
