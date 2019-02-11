@@ -38,6 +38,11 @@ public class GameManager : MonoBehaviour {
 
         return new Vector2(newX, newY);
     }
+
+    public Vector2 GetTopLeft()
+    {
+        return new Vector3(xBounds[0],yBounds[1],0);
+    } 
      
 
 	// Use this for initialization
