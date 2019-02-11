@@ -74,6 +74,7 @@ public class PlayerController : MonoBehaviour {
         input = GetComponent<InputManager>();
         input.ChangeInputType(InputManager.InputType.KEYBOARD);
         anim = GetComponent<Animator>();
+        transform.position = GameManager.myManager.GetTopLeft();
 	}
 
     private void FixedUpdate()
