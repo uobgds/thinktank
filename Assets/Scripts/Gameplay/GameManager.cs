@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-
+using ExampleProject;
+using System;
 
 public class GameManager : MonoBehaviour {
 
@@ -30,6 +30,8 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private HealthLossRatesByDifficulty healthLossRatesByDifficulty;
 
+    private Database db = new Database();
+
     public Vector2 ClampInRange(Vector2 myPosition)
     {
         float newX = Mathf.Clamp(myPosition[0], xBounds[0], xBounds[1]);
@@ -48,13 +50,30 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         myManager = this;
+        db.Start();
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
         // check completion
         CheckCompletion();
+        if(completion == 1)
+        {
+            object time = null;//unimplemented
+            object hp = null;//get health of host
+            object destruction = null;//get destruction percentage of the virus
+            string username = null;//unimplemented
+
+            int score = CalculateScore(time, hp, destruction);
+            db.InsertScore(username, score);
+            db.GetHighScores(10); //gets top ten scores
+        }
 	}
+
+    private int CalculateScore(object time, object hp, object destruction)
+    {
+        throw new NotImplementedException();
+    }
 
     public static float GetHealthLossRate()
     {
