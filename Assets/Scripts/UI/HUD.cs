@@ -72,7 +72,6 @@ public class HUD : MonoBehaviour
 
     public void SetHealth(float percent)
     {
-        return;
         healthText.text = string.Format("{0:0%}", percent);
         Vector2 s = healthBar.sizeDelta;
         s.x = Mathf.Lerp(0, healthBarWidth, percent);
