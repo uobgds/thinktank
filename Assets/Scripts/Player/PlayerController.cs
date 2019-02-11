@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour {
 
     public void DamageHealth(float damage)
     {
+        Debug.Log(damage);
         myHealth = Mathf.Clamp01(myHealth - damage);
     }
 
@@ -74,7 +75,7 @@ public class PlayerController : MonoBehaviour {
         input = GetComponent<InputManager>();
         input.ChangeInputType(InputManager.InputType.KEYBOARD);
         anim = GetComponent<Animator>();
-        transform.position = GameManager.myManager.GetTopLeft();
+        input.input.position = GameManager.myManager.GetTopLeft();
 	}
 
     private void FixedUpdate()

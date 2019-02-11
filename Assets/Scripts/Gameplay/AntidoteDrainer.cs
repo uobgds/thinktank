@@ -16,6 +16,7 @@ public class AntidoteDrainer : MonoBehaviour
         {
             return;
         }
+        
         pl.DamageHealth(GameManager.GetHealthLossRate() * Time.deltaTime);
  //       float speed = pl.GetDrainSpeed();
  //       drainageRate -= speed;
