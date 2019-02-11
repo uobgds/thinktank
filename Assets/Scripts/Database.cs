@@ -5,23 +5,15 @@ using UnityEngine;
 namespace ExampleProject
 {
 
-    public class SQLiteExample : MonoBehaviour
+    public class Database : MonoBehaviour
     {
 
         private string dbPath;
 
-        private void Start()
+        public void Start()
         {
             dbPath = "URI=file:" + Application.persistentDataPath + "/exampleDatabase.db";
-            CreateSchema();
-            ClearDatabase();
-            InsertScore("User1", 3701);
-            InsertScore("User2", 4242);
-            InsertScore("User3", 107);
-            InsertScore("User4", 3001);
-            InsertScore("User5", 445);
-            InsertScore("User6", 1076);
-            GetHighScores(10);
+            CreateSchema();           
         }
 
         public void CreateSchema()
