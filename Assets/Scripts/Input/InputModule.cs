@@ -24,8 +24,6 @@ public abstract class InputModule {
         float xComp = Mathf.Cos(rotation * Mathf.Deg2Rad);
         float yComp = Mathf.Sin(rotation * Mathf.Deg2Rad);
 
-        Debug.Log(xComp + " " + yComp);
-
         return new Vector2(xComp * speed, yComp * speed);
     }
 

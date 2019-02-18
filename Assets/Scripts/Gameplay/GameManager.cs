@@ -125,6 +125,7 @@ public class GameManager : MonoBehaviour
         CheckCompletion();
         if (completion == 1)
         {
+            gameState = GameState.Finished;
             object time = null;//unimplemented
             object hp = null;//get health of host
             object destruction = null;//get destruction percentage of the virus
