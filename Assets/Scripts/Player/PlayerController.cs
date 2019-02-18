@@ -25,6 +25,29 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private float moveDrain = 0.3f;
 
+    private Transform thisTransform;
+
+    public static PlayerController player;
+
+    private void Awake()
+    {
+        player = this;
+        thisTransform = GetComponent<Transform>();
+    }
+
+    private void OnDestroy()
+    {
+        if (player == this)
+        {
+            player = null;
+        }
+    }
+
+    public Vector3 GetPosition()
+    {
+        return thisTransform.position;
+    }
+
     public float GetAntidotePercent()
     {
         return myAntidote;
