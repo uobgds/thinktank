@@ -30,7 +30,7 @@ public class IntroductionCircle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 playerPos = PlayerController.player.GetPosition();
+        Vector3 playerPos = PlayerController.playerController.GetPosition();
 
         Vector3 circlePos = thisTransform.position;
 

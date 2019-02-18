@@ -29,19 +29,17 @@ public class PlayerController : MonoBehaviour {
 
     private Transform thisTransform;
 
-    public static PlayerController player;
-
-    private void Awake()
+    public void Awake()
     {
-        player = this;
+        playerController = this;
         thisTransform = GetComponent<Transform>();
     }
 
     private void OnDestroy()
     {
-        if (player == this)
+        if (playerController == this)
         {
-            player = null;
+            playerController = null;
         }
     }
 
@@ -110,10 +108,7 @@ public class PlayerController : MonoBehaviour {
         return diff;
     }
 
-    public void Awake()
-    {
-        playerController = this;
-    }
+    
 
 
 
