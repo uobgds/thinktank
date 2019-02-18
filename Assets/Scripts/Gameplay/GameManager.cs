@@ -79,16 +79,19 @@ public class GameManager : MonoBehaviour
             object destruction = null;//get destruction percentage of the virus
             string username = null;//unimplemented
 
+            PlayerController.playerController.endGame();
+
             int score = CalculateScore(time, hp, destruction);
             db.InsertScore(username, score);
             db.GetHighScores(10); //gets top ten scores
         }
 	}
 
-
+    //There is a score formula in the notes for this, right now health is all I have access to so I
+    //am using that.
     private int CalculateScore(object time, object hp, object destruction)
     {
-        throw new NotImplementedException();
+        return (int)(PlayerController.playerController.GetHealthPercent() * 100);
     }
 
     public static float GetHealthLossRate()

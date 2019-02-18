@@ -10,9 +10,11 @@ public class InputManager : MonoBehaviour {
     [SerializeField]
     private GameObject gameInfo;
 
+    private int myShapeNum = 0;
 
 
-    public enum InputType { KEYBOARD };
+
+    public enum InputType { KEYBOARD, NONE };
 
 
 
@@ -22,6 +24,10 @@ public class InputManager : MonoBehaviour {
         {
             case InputType.KEYBOARD:
                 input = new KeyboardInput();
+                break;
+            case InputType.NONE:
+                input = new NoInput();
+                input.shapeNum = myShapeNum;
                 break;
         }
     }
@@ -46,6 +52,7 @@ public class InputManager : MonoBehaviour {
         RobotInput inputInfo = new RobotInput();
         inputInfo.position = input.position;
         inputInfo.shape = (RobotShape) input.shapeNum;
+        myShapeNum = input.shapeNum;
         inputInfo.rotation = input.rotation;
         return inputInfo;
     }
