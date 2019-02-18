@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExampleProject;
+using System;
 
-
-
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
 
 
     public static GameManager myManager;
@@ -28,7 +29,15 @@ public class GameManager : MonoBehaviour {
     private float completion;
 
     [SerializeField]
+    private bool overrideDifficulty;
+
+    [SerializeField]
+    private Difficulty difficulty = Difficulty.Tutorial;
+
+    [SerializeField]
     private HealthLossRatesByDifficulty healthLossRatesByDifficulty;
+
+    private Database db;
 
     public Vector2 ClampInRange(Vector2 myPosition)
     {
@@ -41,20 +50,46 @@ public class GameManager : MonoBehaviour {
 
     public Vector2 GetTopLeft()
     {
-        return new Vector3(xBounds[0],yBounds[1],0);
-    } 
-     
+        return new Vector3(xBounds[0], yBounds[1], 0);
+    }
 
-	// Use this for initialization
-	void Start () {
+
+    // Use this for initialization
+    void Awake()
+    {
         myManager = this;
-	}
+        db = GetComponent<Database>();
+        if (overrideDifficulty)
+        {
+            GameSettings.difficulty = difficulty;
+        }
+        // TODO implement this.
+        //db.Start();
+    }
+
 	
 	// Update is called once per frame
 	void FixedUpdate () {
         // check completion
         CheckCompletion();
+        if(completion == 1)
+        {
+            object time = null;//unimplemented
+            object hp = null;//get health of host
+            object destruction = null;//get destruction percentage of the virus
+            string username = null;//unimplemented
+
+            int score = CalculateScore(time, hp, destruction);
+            db.InsertScore(username, score);
+            db.GetHighScores(10); //gets top ten scores
+        }
 	}
+
+
+    private int CalculateScore(object time, object hp, object destruction)
+    {
+        throw new NotImplementedException();
+    }
 
     public static float GetHealthLossRate()
     {
@@ -78,7 +113,7 @@ public class GameManager : MonoBehaviour {
     {
         float total = 0;
         List<GoalArea> goals = GoalArea.goals;
-        for(int i = 0; i < goals.Count; i++)
+        for (int i = 0; i < goals.Count; i++)
         {
             total += goals[i].GetSatisfaction();
         }
