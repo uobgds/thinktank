@@ -7,14 +7,25 @@ using System;
 public class GameManager : MonoBehaviour
 {
 
+    public delegate void VoidEvent();
+    public static event VoidEvent OnGameEnd;
+    public static event VoidEvent OnGameBegin;
 
     public static GameManager myManager;
+
+
+    private GameState gameState;
+
+    public GameState GetGameState()
+    {
+        return gameState;
+    }
 
     [SerializeField]
     private Vector2 goalLoc;
 
     [SerializeField]
-    private Vector2 startPos;
+    private IntroductionCircle introCircle;
 
     [SerializeField]
     private Vector2 enemySpawn;
@@ -58,6 +69,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         myManager = this;
+        gameState = GameState.Introduction;
         db = GetComponent<Database>();
         if (overrideDifficulty)
         {
@@ -67,12 +79,51 @@ public class GameManager : MonoBehaviour
         //db.Start();
     }
 
-	
+    private void Start()
+    {
+        introCircle = FindObjectOfType<IntroductionCircle>();
+    }
+
+    void BeginGame()
+    {
+        gameState = GameState.Playing;
+        if (OnGameBegin != null)
+        {
+            OnGameBegin();
+        }
+        
+    }
+
+    void EndGame()
+    {
+        if(OnGameEnd != null)
+        {
+            OnGameEnd();
+        }
+    }
+
 	// Update is called once per frame
-	void FixedUpdate () {
+	void Update () {
+        switch (gameState)
+        {
+            case GameState.Introduction:
+                IntroUpdate();
+                break;
+            case GameState.Playing:
+                PlayingUpdate();
+                break;
+            case GameState.Finished:
+                break;
+        }
         // check completion
+       
+        
+	}
+
+    private void PlayingUpdate()
+    {
         CheckCompletion();
-        if(completion == 1)
+        if (completion == 1)
         {
             object time = null;//unimplemented
             object hp = null;//get health of host
@@ -85,7 +136,16 @@ public class GameManager : MonoBehaviour
             db.InsertScore(username, score);
             db.GetHighScores(10); //gets top ten scores
         }
-	}
+    }
+    private void IntroUpdate()
+    {
+        // TODO check if player is in intro circle
+        if (introCircle.ReadyToBeginGame())
+        {
+            BeginGame();
+        }
+
+    }
 
     //There is a score formula in the notes for this, right now health is all I have access to so I
     //am using that.
