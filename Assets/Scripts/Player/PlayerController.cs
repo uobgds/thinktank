@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour {
 
     //BY SOPHIE
 
+    public static PlayerController playerController;
+
     
     InputManager input;
     InputManager.RobotInput currentInput;
@@ -24,6 +26,27 @@ public class PlayerController : MonoBehaviour {
     private Vector2 lastPos;
     [SerializeField]
     private float moveDrain = 0.3f;
+
+    private Transform thisTransform;
+
+    public void Awake()
+    {
+        playerController = this;
+        thisTransform = GetComponent<Transform>();
+    }
+
+    private void OnDestroy()
+    {
+        if (playerController == this)
+        {
+            playerController = null;
+        }
+    }
+
+    public Vector3 GetPosition()
+    {
+        return thisTransform.position;
+    }
 
     public float GetAntidotePercent()
     {
@@ -56,6 +79,22 @@ public class PlayerController : MonoBehaviour {
         myAntidote = Mathf.Clamp01(myAntidote);
     }
 
+    public void endGame()
+    {
+        float rotation = input.input.rotation;
+        input.ChangeInputType(InputManager.InputType.NONE);
+        input.input.position = transform.position;
+        input.input.rotation = rotation;
+        
+    }
+
+    public void newGame()
+    {
+        input.ChangeInputType(InputManager.InputType.KEYBOARD);
+        input.input.position = GameManager.myManager.GetTopLeft();
+    }
+
+
     /// <summary>
     /// reduces the antidote by "amount"
     /// </summary>
@@ -68,6 +107,9 @@ public class PlayerController : MonoBehaviour {
         myAntidote = newAntidote;
         return diff;
     }
+
+    
+
 
 
     // Use this for initialization
