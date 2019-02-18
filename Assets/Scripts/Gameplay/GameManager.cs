@@ -48,6 +48,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private HealthLossRatesByDifficulty healthLossRatesByDifficulty;
 
+    [SerializeField]
+    private BacteriaReplicationRatesByDifficulty bacteriaReplicationRatesByDifficulty;
+
     private Database db;
 
     public Vector2 ClampInRange(Vector2 myPosition)
@@ -173,6 +176,24 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public static float GetBacteriaReplicationRate()
+    {
+        switch (GameSettings.difficulty)
+        {
+            case Difficulty.Tutorial:
+                return myManager.bacteriaReplicationRatesByDifficulty.TutorialReplicationRate;
+            case Difficulty.Easy:
+                return myManager.bacteriaReplicationRatesByDifficulty.EasyReplicationRate;
+            case Difficulty.Medium:
+                return myManager.bacteriaReplicationRatesByDifficulty.MediumReplicationRate;
+            case Difficulty.Hard:
+                return myManager.bacteriaReplicationRatesByDifficulty.HardReplicationRate;
+            default:
+                Debug.LogError("Difficulty is not set!");
+                return 0f;
+        }
+    }
+
     void CheckCompletion()
     {
         float total = 0;
@@ -204,4 +225,13 @@ public struct HealthLossRatesByDifficulty
     public float EasyHealthLossRate;
     public float MediumHealthLossRate;
     public float HardHealthLossRate;
+}
+
+[System.Serializable]
+public struct BacteriaReplicationRatesByDifficulty
+{
+    public float TutorialReplicationRate;
+    public float EasyReplicationRate;
+    public float MediumReplicationRate;
+    public float HardReplicationRate;
 }
