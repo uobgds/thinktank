@@ -57,6 +57,11 @@ MonoBehaviour:
     EasyHealthLossRate: 0.02
     MediumHealthLossRate: 0.075
     HardHealthLossRate: 0.15
+  bacteriaReplicationRatesByDifficulty:
+    TutorialReplicationRate: 60
+    EasyReplicationRate: 60
+    MediumReplicationRate: 45
+    HardReplicationRate: 30
 --- !u!114 &6199465465946945340
 MonoBehaviour:
   m_ObjectHideFlags: 0
