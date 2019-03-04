@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
 
     public static GameManager myManager;
 
+    public static int mostRecentScore = 0;
 
     private GameState gameState;
 
@@ -85,6 +86,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         introCircle = FindObjectOfType<IntroductionCircle>();
+        mostRecentScore = 0;
     }
 
     void BeginGame()
@@ -137,6 +139,7 @@ public class GameManager : MonoBehaviour
             PlayerController.playerController.endGame();
 
             int score = CalculateScore(time, hp, destruction);
+            mostRecentScore = score;    // remember this score so we can add it in a future scene
             db.InsertScore(username, score);
             db.GetHighScores(10); //gets top ten scores
         }
