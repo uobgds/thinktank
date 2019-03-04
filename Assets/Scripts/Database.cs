@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using Mono.Data.Sqlite;
 using UnityEngine;
 
@@ -65,8 +67,9 @@ namespace ExampleProject
             }
         }
 
-        public void GetHighScores(int limit)
+        public ArrayList GetHighScores(int limit)
         {
+            ArrayList temp = new ArrayList();
             using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
@@ -89,11 +92,14 @@ namespace ExampleProject
                         var highScoreName = reader.GetString(1);
                         var score = reader.GetInt32(2);
                         var text = string.Format("{0}: {1} [#{2}]", highScoreName, score, id);
+                        temp.Add(text);
                         Debug.Log(text);
                     }
                     Debug.Log("scores (end)");
+
                 }
             }
+            return temp;
         }
 
         public void ClearDatabase()

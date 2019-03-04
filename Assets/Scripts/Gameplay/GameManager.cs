@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ExampleProject;
 using System;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -52,7 +53,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private BacteriaReplicationRatesByDifficulty bacteriaReplicationRatesByDifficulty;
 
-    private Database db;
+    public static Database db;
 
     public Vector2 ClampInRange(Vector2 myPosition)
     {
@@ -134,14 +135,12 @@ public class GameManager : MonoBehaviour
             object time = null;//unimplemented
             object hp = null;//get health of host
             object destruction = null;//get destruction percentage of the virus
-            string username = null;//unimplemented
 
             PlayerController.playerController.endGame();
 
             int score = CalculateScore(time, hp, destruction);
             mostRecentScore = score;    // remember this score so we can add it in a future scene
-            db.InsertScore(username, score);
-            db.GetHighScores(10); //gets top ten scores
+            SceneManager.LoadScene("SaveScore");
         }
     }
     private void IntroUpdate()
