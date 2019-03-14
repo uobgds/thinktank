@@ -146,7 +146,7 @@ public class GameManager : MonoBehaviour
     private void IntroUpdate()
     {
         // TODO check if player is in intro circle
-        if (introCircle.ReadyToBeginGame())
+        if (introCircle != null && introCircle.ReadyToBeginGame())
         {
             BeginGame();
         }
