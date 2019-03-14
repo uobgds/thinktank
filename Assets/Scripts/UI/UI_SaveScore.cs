@@ -20,7 +20,7 @@ public class UI_SaveScore : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Debug.Log("Player's score needs to be bound to UI score element!");
+        score = GameManager.mostRecentScore;
         scoreText.text = score.ToString();
         bSave.onClick.AddListener(onSave);
         bQuit.onClick.AddListener(onQuit);
@@ -34,6 +34,8 @@ public class UI_SaveScore : MonoBehaviour {
     public void onSave()
     {
         playerName = nameInput.text;
+        GameManager.db.InsertScore(playerName, score);
+        GameManager.db.GetHighScores(10);
         SceneManager.LoadScene(highScoresSceneName);
     }
 
