@@ -119,6 +119,7 @@ public class GameManager : MonoBehaviour
                 PlayingUpdate();
                 break;
             case GameState.Finished:
+                SceneManager.LoadScene("SaveScore");
                 break;
         }
         // check completion

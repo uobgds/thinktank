@@ -26,19 +26,19 @@ public class UI_SelectDifficulty : MonoBehaviour {
     void setEasy()
     {
         GameSettings.difficulty = Difficulty.Easy;
-        onContinue();
+        SceneManager.LoadScene("Easy_Level");
     }
 
     void setMedium()
     {
         GameSettings.difficulty = Difficulty.Medium;
-        onContinue();
+        SceneManager.LoadScene("Medium_Level");
     }
 
     void setHard()
     {
         GameSettings.difficulty = Difficulty.Hard;
-        onContinue();
+        SceneManager.LoadScene("Difficult_Level");
     }
 
     void onContinue()
